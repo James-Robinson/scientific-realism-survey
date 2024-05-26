@@ -1,0 +1,12 @@
+name: ScientificRealismSurvey
+title: ScientificRealismSurvey
+username: opensignal
+account: opensignal
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12066396
+bundleId: 8659219
+url: https://opensignal.shinyapps.io/ScientificRealismSurvey/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
