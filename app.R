@@ -14,8 +14,9 @@
 library(shiny)
 library(shinysurveys)
 library(googlesheets4)
-library(tidyverse)
-
+library(dplyr)
+library(tidyr)
+library(lubridate)
 
 gs4_auth(path = "scientificrealismsurvey-2bcd35ce57a1.json")
 
@@ -178,3 +179,8 @@ server <- function(input, output, session) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+#runApp('0.0.0.0', 4306)
+
+# touch app.log
+# Rscript --verbose app.R >> app.log 2>&1 &
