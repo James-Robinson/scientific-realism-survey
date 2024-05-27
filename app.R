@@ -57,7 +57,17 @@ df <- data.frame(
   dependence = NA,
   dependence_value = NA,
   required = TRUE
-)
+)  %>% union(data.frame(
+  question = c("What is your age? (optional)"),
+  option = c('0 - 10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '80+'),
+  input_type = "mc",             
+  input_id='profession',
+  dependence = NA,
+  dependence_value = NA,
+  required=FALSE
+))
+
+#  "What is your age? (optional)", "If you have a university degree is it in the arts, science or mixed? (optional)", "Any comments (optional"
 
 extendInputType(input_type = "slider", {
   shiny::sliderInput(
@@ -77,10 +87,10 @@ ui <- fluidPage(
   surveyOutput(df = df,
                survey_title = "Scientific Realism Questionnaire",
                survey_description = tagList(
-                                     tags$b("To what extent do you agree with each of these 30 statements?"), "Choose between 0 (completely disagree) and 100 (completely agree).",
-                                            tags$br(),tags$br(), "Questions from", tags$a(href="www.rstudio.com", "“Physicists’ Views on Scientific Realism”"), "Céline Henne, Hannah Tomczyk and Christopher Sperber.", 
+                                     tags$b("To what extent do you agree with each of these 30 statements?"), "Choose between 0 (completely disagree) and 100 (completely agree). Your philosophical position will be calulated.",
+                                            tags$br(),tags$br(), "Questions from", tags$a(href="https://philsci-archive.pitt.edu/22931/", "“Physicists’ Views on Scientific Realism”"), "Céline Henne, Hannah Tomczyk and Christopher Sperber.", 
                                             )),
-  theme='red'
+  theme='blue'
 )
 
 
