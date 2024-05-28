@@ -7,9 +7,6 @@
 #    https://shiny.posit.co/
 #
 
-#install.packages("gsheet")
-#install.packages("tidyverse")
-
 
 library(shiny)
 library(shinysurveys)
@@ -17,6 +14,10 @@ library(googlesheets4)
 library(dplyr)
 library(tidyr)
 library(lubridate)
+
+
+library(ggplot2)
+library(ggforce)
 
 gs4_auth(path = "scientificrealismsurvey-2bcd35ce57a1.json")
 
@@ -80,19 +81,27 @@ extendInputType(input_type = "slider", {
 })
 
 
-
-
-
 ui <- fluidPage(
+  
   surveyOutput(df = df,
                survey_title = "Scientific Realism Questionnaire",
                survey_description = tagList(
                                      tags$b("To what extent do you agree with each of these 30 statements?"), "Choose between 0 (completely disagree) and 100 (completely agree). Your philosophical position will be calulated.",
                                             tags$br(),tags$br(), "Questions from", tags$a(href="https://philsci-archive.pitt.edu/22931/", "“Physicists’ Views on Scientific Realism”"), "Céline Henne, Hannah Tomczyk and Christopher Sperber.", 
-                                            )),
-  theme='blue'
-)
+                                            ), theme='#19837E'))
 
+
+
+calculateRealismScore  <- function(df) {
+  realismStatements <- c('S1', 'S2', 'S4', 'S6', 'S8', 'S10', 'S11', 'S13', 'S14', 'S15', 'S17', 'S18', 'S21', 'S22')
+  mean(as.integer(df[1, colnames(df) %in% realismStatements]), na.rm = TRUE)
+}
+
+calculateInstumentalismScore  <- function(df) {
+  insturmentalismStatements <- c('S3', 'S5', 'S7', 'S9', 'S12', 'S16', 'S23', 'S25')
+  mean(as.integer(df[1, colnames(df) %in% insturmentalismStatements]), na.rm = TRUE)
+}
+  
 
 assignCluster <- function(dfRow) {
   
@@ -154,6 +163,32 @@ getClusterName <- function(clusterNumber) {
   clusterNames[clusterNumber]
 }
 
+create_gauge_plot <- function(value, min = 0, max = 100, text) {
+  value <- max(min(value, max), min)
+  ggplot() + 
+    geom_arc_bar(
+      data = tibble(start = -pi / 2, end = pi / 2, r0 = 0.8, r = 1),
+      aes(x0 = 0, y0 = 0, r0 = r0, r = r, start = start, end = end),
+      fill = "#07091C"
+    ) +
+    geom_arc_bar(
+      data = tibble(
+        start = -pi / 2, 
+        end = -pi / 2 + pi * (value - min) / (max - min), 
+        r0 = 0.8, 
+        r = 1
+      ),
+      aes(x0 = 0, y0 = 0, r0 = r0, r = r, start = start, end = end),
+      fill = "#FFFD34"
+    ) +
+    geom_text(
+      aes(x = 0, y = 0.6, label = text), 
+      size = 10, vjust = 1
+    ) +
+    coord_fixed() +
+    theme_void()
+}
+
 server <- function(input, output, session) {
   renderSurvey()
   
@@ -162,13 +197,22 @@ server <- function(input, output, session) {
   
     
     dfResults <- getSurveyData() %>% select(-question_type) %>% pivot_wider('subject_id', names_from='question_id', values_from='response')
-    
-
     cluster <- assignCluster(dfResults %>% head(1))
+    realismScore <- calculateRealismScore(dfResults)
+    instrumentalismScore <- calculateInstumentalismScore(dfResults)
+    print(paste('realismScore',realismScore))
+    print(paste('instrumentalismScore',instrumentalismScore))
+    
+    output$realistPlot <- renderPlot({create_gauge_plot(realismScore, text=paste0(realismScore, '%\nrealist'))})
+    output$instrumentalistPlot <- renderPlot({create_gauge_plot(instrumentalismScore, text=paste0(instrumentalismScore, '%\nintrumentalist'))})
     
     showModal(modalDialog(
       title = paste("You are", getClusterName(cluster)) ,
-      " "
+      fluidRow(
+        column(6, plotOutput("realistPlot")),
+        column(6, plotOutput("instrumentalistPlot")))
+      
+      
     ))
     
     
