@@ -60,8 +60,8 @@ df <- data.frame(
 )  %>% union(data.frame(
   question = c("What is your age? (optional)"),
   option = c('0 - 10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '80+'),
-  input_type = "mc",             
-  input_id='profession',
+  input_type = "select",             
+  input_id='age',
   dependence = NA,
   dependence_value = NA,
   required=FALSE
@@ -168,7 +168,7 @@ server <- function(input, output, session) {
     
     showModal(modalDialog(
       title = paste("You are", getClusterName(cluster)) ,
-      "Compare you results with others at ...."
+      " "
     ))
     
     
@@ -176,6 +176,8 @@ server <- function(input, output, session) {
     print("\n")
     #print(dfResults)
     dfResults$time = now()
+    dfResults$cluster_id = cluster
+    dfResults$cluster_id = getClusterName(cluster)
 
 
     sheet_append(
