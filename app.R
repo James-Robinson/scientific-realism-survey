@@ -64,6 +64,30 @@ df <- data.frame(
   dependence = NA,
   dependence_value = NA,
   required=FALSE
+)) %>% union(data.frame(
+  question = c("In your highest level of study, which subjects did you specialize in? (optional)"),
+  option = c('Arts', 'Sciences', 'Even mix'),
+  input_type = "select",             
+  input_id='subjects',
+  dependence = NA,
+  dependence_value = NA,
+  required=FALSE
+))  %>% union(data.frame(
+  question = c("Are you a professional academic? (optional)"),
+  option = c('Yes', 'No'),
+  input_type = "select",             
+  input_id='academic',
+  dependence = NA,
+  dependence_value = NA,
+  required=FALSE
+)) %>% union(data.frame(
+  question = c("What is your field of research?"),
+  option = c('Arts', 'Sciences'),
+  input_type = "select",             
+  input_id='philosopher',
+  dependence = 'academic',
+  dependence_value = 'Yes',
+  required=FALSE
 ))
 
 #  "What is your age? (optional)", "If you have a university degree is it in the arts, science or mixed? (optional)", "Any comments (optional"
@@ -84,7 +108,9 @@ ui <- fluidPage(
   surveyOutput(df = df,
                survey_title = "Scientific Realism Questionnaire",
                survey_description = tagList(
-                                     tags$b("To what extent do you agree with each of these statements?"), "Choose between 0 (completely disagree) and 100 (completely agree). We'll use these to calculate your philsophical positiona dn show you the results.",
+                                     tags$b("To what extent do you agree with each of these statements?"),
+                                     tags$br(),tags$br(),
+                                       "Choose between 0 (completely disagree) and 100 (completely agree). We'll use these to calculate your philsophical position and show you the results.",
                                             tags$br(),tags$br(), "Questions from", tags$a(href="https://philsci-archive.pitt.edu/22931/", "“Physicists’ Views on Scientific Realism”"), "Céline Henne, Hannah Tomczyk and Christopher Sperber.", 
                                             ), theme='#19837E'))
 
@@ -101,63 +127,61 @@ calculateInstumentalismScore  <- function(df) {
 }
   
 
-assignCluster <- function(dfRow) {
-  
-# Define the centroids data frame
-centroids <- data.frame(
-  Cluster = c(1, 2, 3, 4, 5),
-  S1  = c(30.3, 84.6, 82.3, 58.6, 69.7),
-  S2  = c(54.5, 92.8, 89.6, 79, 79.3),
-  S3  = c(67.5, 18.9, 29.6, 32.8, 66.1),
-  S4  = c(54.6, 92.6, 89.5, 77, 39.6),
-  S5  = c(66.1, 9.2, 24.1, 26.8, 78),
-  S6  = c(43.2, 86, 85.5, 66.1, 80.3),
-  S7  = c(64.5, 24, 55.2, 40.7, 37.9),
-  S8  = c(46.8, 88.7, 88.2, 63.6, 29.7),
-  S9  = c(71.2, 18, 46.7, 35.9, 65.5),
-  S10 = c(25.2, 65.9, 61.4, 36.9, 71.6),
-  S11 = c(57.3, 92.8, 86.6, 68.1, 51.4),
-  S12 = c(66.9, 38.4, 52.2, 49.8, 58),
-  S13 = c(55.7, 96.4, 95, 86, 83.2),
-  S14 = c(43.3, 95.3, 89.4, 76, 65.5),
-  S15 = c(43.8, 87, 89.5, 72, 74),
-  S16 = c(61, 22.2, 43.8, 45.6, 61.6),
-  S17 = c(76.7, 92, 92.4, 81.9, 88.9),
-  S18 = c(48.9, 94.4, 93.2, 76.5, 77.5),
-  S19 = c(42.7, 82.8, 84.8, 73, 73.1),
-  S20 = c(48.3, 81, 76.2, 64.4, 68),
-  S21 = c(37.6, 83.6, 87.2, 59.2, 74.1),
-  S22 = c(61, 90.5, 93.4, 82.4, 74.7),
-  S23 = c(62.7, 17.8, 25.2, 32.7, 64.8),
-  S24 = c(34.2, 71.3, 79.3, 47.3, 73.1),
-  S25 = c(54.2, 22.2, 60.6, 34.7, 57.2),
-  #S26 = c(45.5, 64.5, 53.6, 53.9, 52.8), ignore LHC question for assigning clusters
-  S27 = c(58.8, 39.4, 61.9, 58.8, 55.3),
-  S28 = c(83.1, 74.8, 79.7, 79.7, 81.6),
-  S29 = c(66.5, 41.5, 56.4, 50.4, 73.6),
-  S30 = c(81.6, 46.8, 77.5, 56, 81.4)
-)
 
-colnames(centroids) <- c("Cluster", paste0("S", c(1:25, 27:30)))
+getCentroidDistances <- function(df) {
   
- determine_cluster <- function(df, centroids) {
-   # Initialize a vector to store the cluster assignments
-   
-   # Calculate the Euclidean distance between the row and each cluster centroid
-   distances <- apply(centroids[ , -1], 1, function(centroid) {
-     sqrt(sum((as.integer(df[1, colnames(df) %in% colnames(centroids)]) - centroid)^2, na.rm = TRUE))
-   })
-   # Assign the cluster with the minimum distance
-   print(distances)
-   return(centroids$Cluster[which.min(distances)])
-   
- }
- return(determine_cluster(dfRow, centroids))
+  # Define the centroids data frame
+  centroids <- data.frame(
+    Cluster = c(1, 2, 3, 4, 5),
+    S1  = c(30.3, 84.6, 82.3, 58.6, 69.7),
+    S2  = c(54.5, 92.8, 89.6, 79, 79.3),
+    S3  = c(67.5, 18.9, 29.6, 32.8, 66.1),
+    S4  = c(54.6, 92.6, 89.5, 77, 39.6),
+    S5  = c(66.1, 9.2, 24.1, 26.8, 78),
+    S6  = c(43.2, 86, 85.5, 66.1, 80.3),
+    S7  = c(64.5, 24, 55.2, 40.7, 37.9),
+    S8  = c(46.8, 88.7, 88.2, 63.6, 29.7),
+    S9  = c(71.2, 18, 46.7, 35.9, 65.5),
+    S10 = c(25.2, 65.9, 61.4, 36.9, 71.6),
+    S11 = c(57.3, 92.8, 86.6, 68.1, 51.4),
+    S12 = c(66.9, 38.4, 52.2, 49.8, 58),
+    S13 = c(55.7, 96.4, 95, 86, 83.2),
+    S14 = c(43.3, 95.3, 89.4, 76, 65.5),
+    S15 = c(43.8, 87, 89.5, 72, 74),
+    S16 = c(61, 22.2, 43.8, 45.6, 61.6),
+    S17 = c(76.7, 92, 92.4, 81.9, 88.9),
+    S18 = c(48.9, 94.4, 93.2, 76.5, 77.5),
+    S19 = c(42.7, 82.8, 84.8, 73, 73.1),
+    S20 = c(48.3, 81, 76.2, 64.4, 68),
+    S21 = c(37.6, 83.6, 87.2, 59.2, 74.1),
+    S22 = c(61, 90.5, 93.4, 82.4, 74.7),
+    S23 = c(62.7, 17.8, 25.2, 32.7, 64.8),
+    S24 = c(34.2, 71.3, 79.3, 47.3, 73.1),
+    S25 = c(54.2, 22.2, 60.6, 34.7, 57.2),
+    #S26 = c(45.5, 64.5, 53.6, 53.9, 52.8), ignore LHC question for assigning clusters
+    S27 = c(58.8, 39.4, 61.9, 58.8, 55.3),
+    S28 = c(83.1, 74.8, 79.7, 79.7, 81.6),
+    S29 = c(66.5, 41.5, 56.4, 50.4, 73.6),
+    S30 = c(81.6, 46.8, 77.5, 56, 81.4)
+  )
+  
+  colnames(centroids) <- c("Cluster", paste0("S", c(1:25, 27:30)))
+  
+  # Calculate the Euclidean distance between the row and each cluster centroid
+  distances <- apply(centroids[ , -1], 1, function(centroid) {
+    sqrt(sum((as.integer(df[1, colnames(df) %in% colnames(centroids)]) - centroid)^2, na.rm = TRUE))
+  })
+  return(distances)
+}
+
+assignCluster <- function(distances) {
+  clusters <- c(1, 2, 3, 4, 5)
+   return(clusters[which.min(distances)])
 }
 
 getClusterName <- function(clusterNumber) {
   print(paste("cluster number",clusterNumber))
-  clusterNames <-c("an intrumentalist", "a classic realist", "a perspectival/pluarlist realist", "a moderate realist", "hard to categorize")
+  clusterNames <-c("intrumentalism", "classic realism", "a perspectival/pluarlist realism", "moderate realism", "with the hard to categorize group")
   clusterNames[clusterNumber]
 }
 
@@ -180,11 +204,45 @@ create_gauge_plots <- function(realism_score, instrumentalism_score) {
     theme_void() +
     facet_wrap(~variable) +
     theme(strip.background = element_blank(),
-          strip.text.x = element_blank()) +
+          strip.text.x = element_blank(),
+          panel.background = element_rect(fill = "transparent", colour = NA),
+          plot.background = element_rect(fill = "transparent", colour = NA),
+          plot.margin = unit(c(0, 0, 0, 0), "cm") # Reduce whitespace around the plot
+          ) +
+    
     guides(fill=FALSE) +
     guides(colour=FALSE)
 }
 
+
+create_radar_chart <-function(distances) {
+  data <- data.frame(
+    `Instrumentalist` = c(340.9976, 0, 340.9976-distances[1]),
+    `Classic\nRealist` = c(441.6561, 0,441.6561-distances[2]),
+    `Realist And Pluralist` = c(422.0926, 0, 422.0926-distances[3]),
+    `Moderate Realist` = c(365.1837, 0,  365.1837- distances[4]),
+    `Tricky` = c(381.9979, 0, 381.9979- distances[5])
+  )
+  
+  # Add row names
+  rownames(data) <- c("Max", "Min", "Value")
+  
+  par(mar = c(9, 3, 3, 3))
+  
+  # Plot the radar chart
+  radarchart(data, axistype = 1,
+             # Custom polygon colors
+             pcol = "#07091C",
+             pfcol = rgb(0.09803922, 0.51372549, 0.49411765, 0.5),
+             plwd = 2,
+             # Custom grid colors
+             cglcol = "grey",
+             cglty = 1,
+             axislabcol = "grey",
+             caxislabels =  rep(" ",5) ,
+             # Custom background and border
+             vlcex = 0.8)
+}
 
 
 
@@ -196,15 +254,31 @@ server <- function(input, output, session) {
   
     
     dfResults <- getSurveyData() %>% select(-question_type) %>% pivot_wider('subject_id', names_from='question_id', values_from='response')
-    cluster <- assignCluster(dfResults %>% head(1))
+    
+    distances <- getCentroidDistances(dfResults)
+    cluster <- assignCluster(dfResults)
     realismScore <- calculateRealismScore(dfResults)
     instrumentalismScore <- calculateInstumentalismScore(dfResults)
 
     output$gaugePlt <- renderPlot({create_gauge_plots(realismScore, instrumentalismScore)})
-
+    output$radarPlt <- renderPlot({create_radar_chart(distances)})
+    
     showModal(modalDialog(
       title = paste("Your results") ,
-      plotOutput("gaugePlt")
+      tags$div(
+        "Of the survey questions, 22 test inclination towards realism or instrumentalism, below are your average results for these two sets of questions.",
+        tags$br(), tags$br(),
+        "Note it is possible to have high score for both as they are tested by distinct subsets of questions",
+        style = "position: relative; z-index: 2; background-color: transparent;"
+      ),
+      tags$div(plotOutput("gaugePlt"), style ="margin: -70px 0;  background-color: transparent;" ),
+      tags$div(
+        "This is how you compare to the 5 clusters identified among physicists:",
+        style = "position: relative; z-index: 2; text-align: center; margin: -60px 0 10px 0;" # Adjust the margin here to reduce space
+      ),
+      plotOutput("radarPlt"),
+      paste0("Your closest cluster is ",getClusterName(cluster),".")
+      
     ))
 
    
