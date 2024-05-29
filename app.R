@@ -14,10 +14,8 @@ library(googlesheets4)
 library(dplyr)
 library(tidyr)
 library(lubridate)
-
-
-library(ggplot2)
-library(ggforce)
+#library(ggplot2)
+library(plotly)
 
 gs4_auth(path = "scientificrealismsurvey-2bcd35ce57a1.json")
 
@@ -86,7 +84,7 @@ ui <- fluidPage(
   surveyOutput(df = df,
                survey_title = "Scientific Realism Questionnaire",
                survey_description = tagList(
-                                     tags$b("To what extent do you agree with each of these 30 statements?"), "Choose between 0 (completely disagree) and 100 (completely agree). Your philosophical position will be calulated.",
+                                     tags$b("To what extent do you agree with each of these statements?"), "Choose between 0 (completely disagree) and 100 (completely agree). We'll use these to calculate your philsophical positiona dn show you the results.",
                                             tags$br(),tags$br(), "Questions from", tags$a(href="https://philsci-archive.pitt.edu/22931/", "“Physicists’ Views on Scientific Realism”"), "Céline Henne, Hannah Tomczyk and Christopher Sperber.", 
                                             ), theme='#19837E'))
 
@@ -163,35 +161,36 @@ getClusterName <- function(clusterNumber) {
   clusterNames[clusterNumber]
 }
 
-create_gauge_plot <- function(value, min = 0, max = 100, text) {
-  value <- max(min(value, max), min)
-  ggplot() + 
-    geom_arc_bar(
-      data = tibble(start = -pi / 2, end = pi / 2, r0 = 0.8, r = 1),
-      aes(x0 = 0, y0 = 0, r0 = r0, r = r, start = start, end = end),
-      fill = "#07091C"
-    ) +
-    geom_arc_bar(
-      data = tibble(
-        start = -pi / 2, 
-        end = -pi / 2 + pi * (value - min) / (max - min), 
-        r0 = 0.8, 
-        r = 1
-      ),
-      aes(x0 = 0, y0 = 0, r0 = r0, r = r, start = start, end = end),
-      fill = "#FFFD34"
-    ) +
-    geom_text(
-      aes(x = 0, y = 0.6, label = text), 
-      size = 10, vjust = 1
-    ) +
-    coord_fixed() +
-    theme_void()
+
+create_gauge_plots <- function(realism_score, instrumentalism_score) {
+  
+  df <- data.frame(matrix(nrow=2, ncol = 2))
+  
+  names(df) <- c("variable", "percentage")
+  df$variable <- c("Realism Score","Instrumentalism Score")
+  df$val <- c(realism_score, instrumentalism_score)
+  
+  
+  ggplot(df, aes(ymax = val/100, ymin = 0, xmax = 2, xmin = 1)) +
+    geom_rect(aes(ymax=1, ymin=0, xmax=2, xmin=1), fill ="#07091C") +
+    geom_rect(fill = "#19837E") + 
+    geom_text(aes(x = 0, y = 0, label = paste0(round(val,0),'%')), colour='#19837E', size=6.5) +
+    coord_polar(theta = "y",start=-pi/2) + xlim(c(0, 2)) + ylim(c(0,2)) +
+    geom_text(aes(x=0.4, y=1.5, label=variable), size=6.2) + 
+    theme_void() +
+    facet_wrap(~variable) +
+    theme(strip.background = element_blank(),
+          strip.text.x = element_blank()) +
+    guides(fill=FALSE) +
+    guides(colour=FALSE)
 }
+
+
+
+
 
 server <- function(input, output, session) {
   renderSurvey()
-  
 
   observeEvent(input$submit, {
   
@@ -200,21 +199,16 @@ server <- function(input, output, session) {
     cluster <- assignCluster(dfResults %>% head(1))
     realismScore <- calculateRealismScore(dfResults)
     instrumentalismScore <- calculateInstumentalismScore(dfResults)
-    print(paste('realismScore',realismScore))
-    print(paste('instrumentalismScore',instrumentalismScore))
-    
-    output$realistPlot <- renderPlot({create_gauge_plot(realismScore, text=paste0(realismScore, '%\nrealist'))})
-    output$instrumentalistPlot <- renderPlot({create_gauge_plot(instrumentalismScore, text=paste0(instrumentalismScore, '%\nintrumentalist'))})
-    
+
+    output$gaugePlt <- renderPlot({create_gauge_plots(realismScore, instrumentalismScore)})
+
     showModal(modalDialog(
-      title = paste("You are", getClusterName(cluster)) ,
-      fluidRow(
-        column(6, plotOutput("realistPlot")),
-        column(6, plotOutput("instrumentalistPlot")))
-      
-      
+      title = paste("Your results") ,
+      plotOutput("gaugePlt")
     ))
-    
+
+   
+
     
     #print(getSurveyData())
     print("\n")
