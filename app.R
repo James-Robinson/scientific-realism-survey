@@ -346,7 +346,7 @@ df <- data.frame(
   dependence_value = 'Other',
   required = FALSE
 )) %>% union(data.frame(
-  question = c("How long have you worked in your field year? (optional)"),
+  question = c("How long have you worked in your field? (optional)"),
   option = c('less than 1 year', '1 - 2 years', '2 - 5 years', '5 - 10 years ', '10 - 20 years', 'over 20 years', 'N/a'),
   input_type = "select",             
   input_id='time_in_field',
