@@ -82,16 +82,279 @@ df <- data.frame(
   dependence_value = NA,
   required=FALSE
 )) %>% union(data.frame(
-  question = c("What is your field of research?"),
-  option = c('Arts', 'Sciences'),
+  question = c("What is your field of research? (optional)"),
+  option = c("Natural Sciences", "Life Sciences", "Physical Sciences", "Mathematics and Statistics", "Engineering and Technology", "Computer Science and Information Technology", "Health and Medicine", "Social Sciences", "Humanities", "Arts", "Education", "Business and Management", "Law and Legal Studies", "Agricultural and Environmental Sciences", "Interdisciplinary Studies", "Library and Information Science", "Media and Communication", "Other"),
   input_type = "select",             
-  input_id='philosopher',
+  input_id='field',
   dependence = 'academic',
   dependence_value = 'Yes',
   required=FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Natural Sciences: (optional)"),
+  option = c("Biology", "Chemistry", "Physics (experimental)","Physics (theoretical)", "Physics (generalist)", "Earth Sciences (Geology, Meteorology, Oceanography)", "Environmental Science", "Astronomy", "Other"),
+  input_type = "select",
+  input_id = 'subfield_natural_sciences',
+  dependence = 'field',
+  dependence_value = 'Natural Sciences',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Life Sciences: (optional)"),
+  option = c("Biochemistry", "Biotechnology", "Genetics", "Neuroscience", "Microbiology", "Zoology", "Botany", "Ecology", "Other"),
+  input_type = "select",
+  input_id = 'subfield_life_sciences',
+  dependence = 'field',
+  dependence_value = 'Life Sciences',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Physical Sciences: (optional)"),
+  option = c("Materials Science", "Nanotechnology", "Applied Physics", "Other"),
+  input_type = "select",
+  input_id = 'subfield_physical_sciences',
+  dependence = 'field',
+  dependence_value = 'Physical Sciences',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Mathematics and Statistics: (optional)"),
+  option = c("Pure Mathematics", "Applied Mathematics", "Statistics", "Actuarial Science", "Other"),
+  input_type = "select",
+  input_id = 'subfield_math_stats',
+  dependence = 'field',
+  dependence_value = 'Mathematics and Statistics',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Engineering and Technology: (optional)"),
+  option = c("Civil Engineering", "Mechanical Engineering", "Electrical Engineering", "Chemical Engineering", "Computer Engineering", "Software Engineering", "Biomedical Engineering", "Aerospace Engineering", "Industrial Engineering", "Other"),
+  input_type = "select",
+  input_id = 'subfield_engineering_tech',
+  dependence = 'field',
+  dependence_value = 'Engineering and Technology',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Computer Science and Information Technology: (optional)"),
+  option = c("Computer Science", "Information Technology", "Data Science", "Cybersecurity", "Artificial Intelligence", "Robotics", "Other"),
+  input_type = "select",
+  input_id = 'subfield_cs_it',
+  dependence = 'field',
+  dependence_value = 'Computer Science and Information Technology',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Health and Medicine: (optional)"),
+  option = c("Medicine", "Nursing", "Public Health", "Pharmacology", "Dentistry", "Veterinary Medicine", "Medical Research", "Other"),
+  input_type = "select",
+  input_id = 'subfield_health_medicine',
+  dependence = 'field',
+  dependence_value = 'Health and Medicine',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Social Sciences: (optional)"),
+  option = c("Psychology", "Sociology", "Anthropology", "Political Science", "Economics", "Geography", "Social Work", "International Relations", "Other"),
+  input_type = "select",
+  input_id = 'subfield_social_sciences',
+  dependence = 'field',
+  dependence_value = 'Social Sciences',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Humanities: (optional)"),
+  option = c("History", "Philosophy", "Literature", "Linguistics", "Religious Studies", "Art History", "Classics", "Cultural Studies", "Other"),
+  input_type = "select",
+  input_id = 'subfield_humanities',
+  dependence = 'field',
+  dependence_value = 'Humanities',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Arts: (optional)"),
+  option = c("Visual Arts", "Performing Arts", "Music", "Film Studies", "Design", "Other"),
+  input_type = "select",
+  input_id = 'subfield_arts',
+  dependence = 'field',
+  dependence_value = 'Arts',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Business and Management: (optional)"),
+  option = c("Business Administration", "Management", "Marketing", "Finance", "Accounting", "International Business", "Human Resource Management", "Entrepreneurship", "Other"),
+  input_type = "select",
+  input_id = 'subfield_business_management',
+  dependence = 'field',
+  dependence_value = 'Business and Management',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Law and Legal Studies: (optional)"),
+  option = c("Law", "Criminology", "Legal Studies", "Other"),
+  input_type = "select",
+  input_id = 'subfield_law_legal',
+  dependence = 'field',
+  dependence_value = 'Law and Legal Studies',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Agricultural and Environmental Sciences: (optional)"),
+  option = c("Agriculture", "Horticulture", "Forestry", "Environmental Management", "Agricultural Economics", "Other"),
+  input_type = "select",
+  input_id = 'subfield_agri_env',
+  dependence = 'field',
+  dependence_value = 'Agricultural and Environmental Sciences',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Interdisciplinary Studies: (optional)"),
+  option = c("Cognitive Science", "Gender Studies", "Urban Studies", "Development Studies", "Sustainability Studies", "Other"),
+  input_type = "select",
+  input_id = 'subfield_interdisciplinary',
+  dependence = 'field',
+  dependence_value = 'Interdisciplinary Studies',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Library and Information Science: (optional)"),
+  option = c("Library Science", "Information Science", "Other"),
+  input_type = "select",
+  input_id = 'subfield_library_info_science',
+  dependence = 'field',
+  dependence_value = 'Library and Information Science',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Media and Communication: (optional)"),
+  option = c("Journalism", "Media Studies", "Communication", "Other"),
+  input_type = "select",
+  input_id = 'subfield_media_communication',
+  dependence = 'field',
+  dependence_value = 'Media and Communication',
+  required = FALSE
+))  %>% union(data.frame(
+  question = c("What is your profession?"),
+  option = c("Healthcare and Medical", "Education", "Information Technology", "Engineering and Architecture", "Business and Finance", "Legal", "Creative Arts and Media", "Skilled Trades", "Science and Research", "Public Service and Administration", "Hospitality and Tourism", "Retail and Customer Service", "Transportation and Logistics", "Agriculture and Environmental", "Other"),
+  input_type = "select",             
+  input_id = 'profession',
+  dependence = 'academic',
+  dependence_value = 'No',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Healthcare and Medical:"),
+  option = c("Doctor", "Nurse", "Pharmacist", "Dentist", "Veterinarian", "Physical Therapist", "Medical Technician", "Healthcare Administrator", "Psychologist", "Paramedic", "Other"),
+  input_type = "select",
+  input_id = 'subfield_healthcare_medical',
+  dependence = 'profession',
+  dependence_value = 'Healthcare and Medical',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Education:"),
+  option = c("Teacher", "Professor", "School Administrator", "Librarian", "Tutor", "Education Consultant", "School Counselor", "Special Education Teacher", "Researcher", "Other"),
+  input_type = "select",
+  input_id = 'subfield_education',
+  dependence = 'profession',
+  dependence_value = 'Education',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Information Technology:"),
+  option = c("Software Developer", "IT Support Specialist", "Network Administrator", "Data Scientist", "Cybersecurity Analyst", "Systems Analyst", "Database Administrator", "Web Developer", "IT Project Manager", "Other"),
+  input_type = "select",
+  input_id = 'subfield_it',
+  dependence = 'profession',
+  dependence_value = 'Information Technology',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Engineering and Architecture:"),
+  option = c("Civil Engineer", "Mechanical Engineer", "Electrical Engineer", "Chemical Engineer", "Environmental Engineer", "Architect", "Industrial Designer", "Aerospace Engineer", "Structural Engineer", "Other"),
+  input_type = "select",
+  input_id = 'subfield_engineering_architecture',
+  dependence = 'profession',
+  dependence_value = 'Engineering and Architecture',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Business and Finance:"),
+  option = c("Accountant", "Financial Analyst", "Marketing Manager", "Human Resources Manager", "Sales Manager", "Business Consultant", "Entrepreneur", "Customer Service Representative", "Project Manager", "Other"),
+  input_type = "select",
+  input_id = 'subfield_business_finance',
+  dependence = 'profession',
+  dependence_value = 'Business and Finance',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Legal:"),
+  option = c("Lawyer", "Paralegal", "Judge", "Legal Secretary", "Compliance Officer", "Court Reporter", "Legal Consultant", "Other"),
+  input_type = "select",
+  input_id = 'subfield_legal',
+  dependence = 'profession',
+  dependence_value = 'Legal',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Creative Arts and Media:"),
+  option = c("Graphic Designer", "Writer/Author", "Journalist", "Photographer", "Musician", "Actor/Actress", "Film Director", "Video Editor", "Art Director", "Other"),
+  input_type = "select",
+  input_id = 'subfield_creative_arts_media',
+  dependence = 'profession',
+  dependence_value = 'Creative Arts and Media',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Skilled Trades:"),
+  option = c("Carpenter", "Electrician", "Plumber", "Mechanic", "Welder", "HVAC Technician", "Construction Worker", "Machinist", "Other"),
+  input_type = "select",
+  input_id = 'subfield_skilled_trades',
+  dependence = 'profession',
+  dependence_value = 'Skilled Trades',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Science and Research:"),
+  option = c("Biologist", "Chemist", "Physicist", "Environmental Scientist", "Geologist", "Research Scientist", "Laboratory Technician", "Other"),
+  input_type = "select",
+  input_id = 'subfield_science_research',
+  dependence = 'profession',
+  dependence_value = 'Science and Research',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Public Service and Administration:"),
+  option = c("Police Officer", "Firefighter", "Social Worker", "Public Relations Specialist", "Urban Planner", "Politician", "Diplomat", "Military Personnel", "Other"),
+  input_type = "select",
+  input_id = 'subfield_public_service',
+  dependence = 'profession',
+  dependence_value = 'Public Service and Administration',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Hospitality and Tourism:"),
+  option = c("Chef", "Hotel Manager", "Travel Agent", "Tour Guide", "Event Planner", "Restaurant Manager", "Other"),
+  input_type = "select",
+  input_id = 'subfield_hospitality_tourism',
+  dependence = 'profession',
+  dependence_value = 'Hospitality and Tourism',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Retail and Customer Service:"),
+  option = c("Retail Manager", "Cashier", "Sales Associate", "Store Manager", "Customer Service Representative", "Other"),
+  input_type = "select",
+  input_id = 'subfield_retail_customer_service',
+  dependence = 'profession',
+  dependence_value = 'Retail and Customer Service',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Transportation and Logistics:"),
+  option = c("Truck Driver", "Airline Pilot", "Logistics Manager", "Supply Chain Analyst", "Delivery Driver", "Warehouse Manager", "Other"),
+  input_type = "select",
+  input_id = 'subfield_transportation_logistics',
+  dependence = 'profession',
+  dependence_value = 'Transportation and Logistics',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Agriculture and Environmental:"),
+  option = c("Farmer", "Agricultural Scientist", "Environmental Consultant", "Horticulturist", "Forester", "Other"),
+  input_type = "select",
+  input_id = 'subfield_agriculture_environmental',
+  dependence = 'profession',
+  dependence_value = 'Agriculture and Environmental',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("Please specify your subfield in Other:"),
+  option = c("Other"),
+  input_type = "select",
+  input_id = 'subfield_other',
+  dependence = 'profession',
+  dependence_value = 'Other',
+  required = FALSE
+)) %>% union(data.frame(
+  question = c("How long have you worked in your field year? (optional)"),
+  option = c('less than 1 year', '1 - 2 years', '2 - 5 years', '5 - 10 years ', '10 - 20 years', 'over 20 years', 'N/a'),
+  input_type = "select",             
+  input_id='time_in_field',
+  dependence = NA,
+  dependence_value = NA,
+  required=FALSE
 ))
 
-#  "What is your age? (optional)", "If you have a university degree is it in the arts, science or mixed? (optional)", "Any comments (optional"
 
 extendInputType(input_type = "slider", {
   shiny::sliderInput(
@@ -176,7 +439,7 @@ getCentroidDistances <- function(df) {
 }
 
 assignCluster <- function(distances) {
-  clusters <- c(1, 2, 3, 4, 5)
+   clusters <- c(1, 2, 3, 4, 5)
    return(clusters[which.min(distances)])
 }
 
@@ -245,7 +508,14 @@ create_radar_chart <-function(distances) {
              vlcex = 0.8)
 }
 
-
+getCompatriots <- function(clusterNumber) {
+  compatriots <- c("People who have held similiar positions include Ernst Mach, Henri Poincaré, Niels Bohr & Larry Laudan.", 
+                   "People who have held similiar positions include Stathis Psillos, Alan Musgrave & Steven Weinberg",
+                   "You might be interested in the work Michela Massimi who has pioneered the idea of Perspectival Realism",
+                   "People who have held similiar positions include Ian Hacking, Anjan Chakravartty & Nancy Cartwright",
+                   "")
+  compatriots[clusterNumber]
+}
 
 
 server <- function(input, output, session) {
@@ -257,7 +527,7 @@ server <- function(input, output, session) {
     dfResults <- getSurveyData() %>% select(-question_type) %>% pivot_wider('subject_id', names_from='question_id', values_from='response')
     
     distances <- getCentroidDistances(dfResults)
-    cluster <- assignCluster(dfResults)
+    cluster <- assignCluster(distances)
     realismScore <- calculateRealismScore(dfResults)
     instrumentalismScore <- calculateInstumentalismScore(dfResults)
 
@@ -269,17 +539,16 @@ server <- function(input, output, session) {
       tags$div(
         "Of the survey questions, 22 test inclination towards realism or instrumentalism, below are your average results for these two sets of questions.",
         tags$br(), tags$br(),
-        "Note it is possible to have high score for both as they are tested by distinct subsets of questions",
+        "Note it is possible to have high score for both as they are tested by distinct subsets of questions.",
         style = "position: relative; z-index: 2; background-color: transparent;"
       ),
       tags$div(plotOutput("gaugePlt"), style ="margin: -70px 0;  background-color: transparent;" ),
       tags$div(
-        "This is how you compare to the 5 clusters identified among physicists:",
-        style = "position: relative; z-index: 2; text-align: center; margin: -60px 0 10px 0;" # Adjust the margin here to reduce space
+        paste0("The below chart shows how you compare to the 5 clusters identified among physicists. Your closest cluster is ",getClusterName(cluster),". ",getCompatriots(cluster)) ,
+        style = "position: relative; z-index: margin: -60px 0 10px 0;" # Adjust the margin here to reduce space
       ),
-      plotOutput("radarPlt"),
-      paste0("Your closest cluster is ",getClusterName(cluster),".")
-      
+      plotOutput("radarPlt")
+
     ))
 
    
@@ -291,6 +560,8 @@ server <- function(input, output, session) {
     dfResults$time = now()
     dfResults$cluster_id = cluster
     dfResults$cluster_id = getClusterName(cluster)
+    dfResults$realism_score = realismScore
+    dfResults$instrumentalism_score = instrumentalismScore
 
 
     sheet_append(
