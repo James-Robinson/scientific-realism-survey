@@ -376,7 +376,10 @@ ui <- fluidPage(
                                      tags$br(),tags$br(),
                                        "Choose between 0 (completely disagree) and 100 (completely agree). We'll use these to calculate your philsophical position and show you the results.",
                                             tags$br(),tags$br(), "Questions from", tags$a(href="https://philsci-archive.pitt.edu/22931/", "“Physicists’ Views on Scientific Realism”"), "Céline Henne, Hannah Tomczyk and Christopher Sperber.", 
-                                            ), theme='#19837E'))
+                                     tags$br(),tags$br(),
+                                     "Listen to Céline discuss the study on the ", tags$a(href="https://www.multiverses.xyz/podcast/do-electrons-exist-celine-henne-physicists-views-on-scientific-realism-instrumentalism/", "Multiverses Podcast")
+                                            ), theme='#19837E'),
+  )
 
 
 
@@ -545,6 +548,8 @@ server <- function(input, output, session) {
       tags$div(plotOutput("gaugePlt"), style ="margin: -70px 0;  background-color: transparent;" ),
       tags$div(
         paste0("The below chart shows how you compare to the 5 clusters identified among physicists. Your closest cluster is ",getClusterName(cluster),". ",getCompatriots(cluster)) ,
+        tags$br(),tags$br(),
+        "Listen to a discussion the study on the ", tags$a(href="https://www.multiverses.xyz/podcast/do-electrons-exist-celine-henne-physicists-views-on-scientific-realism-instrumentalism/", "Multiverses Podcast"),
         style = "position: relative; z-index: margin: -60px 0 10px 0;" # Adjust the margin here to reduce space
       ),
       plotOutput("radarPlt")
